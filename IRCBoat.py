@@ -56,8 +56,9 @@ class IRCBoat:
         """Connection au serveur en SSL"""
         self.socket.connect((self.host, self.port))
         self.socket = ssl.wrap_socket(self.socket, keyfile=None,
-                certfile=None, server_side=False, do_handshake_on_connect=False,
-                suppress_ragged_eofs=True)
+                                certfile=None, server_side=False,
+                                do_handshake_on_connect=False,
+                                suppress_ragged_eofs=True)
         self.raw_irc_command('NICK ' + self.nick)
         print(('USER ' + self.ident + ' ' + self.host + ' :' + self.realname))
         self.raw_irc_command('USER ' + self.ident + ' ' + self.host + ' '
@@ -79,6 +80,7 @@ class IRCBoat:
                 #if is_bang(cmd, msg[4:]):
                     # passe à l'object d'interface de modules custom
                     # code here !
+                    # BangModule.exec(user, bang, args)
                 if cmd == ':!op':
                     self.set_mode(dst, '+o', nick)
         # TODO : methode d'auth séparée
