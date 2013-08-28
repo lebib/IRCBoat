@@ -78,6 +78,7 @@ class IRCBoat:
             if dst.find('#') != -1:
                 #if is_bang(cmd, msg[4:]):
                     # passe à l'object d'interface de modules custom
+                    # code here !
                 if cmd == ':!op':
                     self.set_mode(dst, '+o', nick)
         # TODO : methode d'auth séparée
