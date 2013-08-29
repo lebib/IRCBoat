@@ -2,6 +2,8 @@
 #-*- coding: utf-8 -*-
 
 # /!\ CHANTIER /!\
+
+
 class BoatBangzExecutor:
 
     def __init__(self):
@@ -9,11 +11,12 @@ class BoatBangzExecutor:
 
     def bangprobe(self, bang):
         # Cherche si le module est load
-        if bang not in self.loaded_modules:
+        if bang not in self.loadedmodules:
             # ~ search & loading in module land ~
             # chaque bang est dans un module du même nom
             # dans le sous dossier modules/*.py
             # ex : module/op.py
+            mod = ''
             try:
                 mod = __import__('modules/', bang,'.py')
                 self.loadeddmodules.append(bang)
@@ -23,20 +26,17 @@ class BoatBangzExecutor:
         if mod:
             # le module est load
             self.exec_bang(self, self.bang, self.args)
+            return 1
+        else:
+            return 0
 
-        def exec_bang(self, mod, user, args):
-            #retour = getattr(mod, 'run')(user, args)
-            return retour
+    def exec_bang(self, mod, user, args):
+        retour = getattr(mod, 'run',user)
+        return retour
 
-class LocalMod:
 
-    def __init__(self, user, args=None):
-        self.args = args
-        self.user = user
-
-    def run(self, user, self.args):
-        ''' !op nick '''
-        rtrn = 'MODE ' + user + ' +o ' + args[1]
-        return rtrn
-
-BBQ = BoatBangExecutor('pwny','op')
+BBQ = BoatBangzExecutor()
+BBQ.bangprobe('LocalMod')
+fnc = BBQ.exec_bang(LocalMod,'pwny','niko')
+ret = fnc(op,'pwy','niko')
+print(ret)
