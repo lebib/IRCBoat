@@ -21,6 +21,7 @@ class BoatBangzExecutor:
                 mod = __import__('modules/', bang,'.py')
                 self.loadeddmodules.append(bang)
                 self.loadedmodules.append(mod)
+                print('loaded',mod)
             except ImportError:
                 print('debug : erreur d\'importation', mod)
         if mod:
@@ -36,7 +37,7 @@ class BoatBangzExecutor:
 
 
 BBQ = BoatBangzExecutor()
-BBQ.bangprobe('LocalMod')
+#BBQ.bangprobe('LocalMod')
 fnc = BBQ.exec_bang(LocalMod,'pwny','niko')
 ret = fnc(op,'pwy','niko')
 print(ret)
