@@ -3,41 +3,30 @@
 
 # /!\ CHANTIER /!\
 
-
-class BoatBangzExecutor:
+class Modulator:
 
     def __init__(self):
-        self.loadedmodules = []
+        self.bangzlib = {}
 
-    def bangprobe(self, bang):
-        # Cherche si le module est load
-        if bang not in self.loadedmodules:
-            # ~ search & loading in module land ~
-            # chaque bang est dans un module du même nom
-            # dans le sous dossier modules/*.py
-            # ex : module/op.py
-            mod = ''
-            try:
-                mod = __import__('modules/', bang,'.py')
-                self.loadeddmodules.append(bang)
-                self.loadedmodules.append(mod)
-                print('loaded',mod)
-            except ImportError:
-                print('debug : erreur d\'importation', mod)
-        if mod:
-            # le module est load
-            self.exec_bang(self, self.bang, self.args)
-            return 1
-        else:
-            return 0
+    def load(self, filename):
+        mod = __import__('bangz.' + filename)
+        mod = getattr(mod,filename)
+        mod = mod.BangModule()
+        for bang, func in mod.bangz.items():
+            self.bangzlib[bang] = func
 
-    def exec_bang(self, mod, user, args):
-        retour = getattr(mod, 'run',user)
-        return retour
+    def execute(self, bang, args):
+        # TODO : gestion d'exeptions
+        return self.bangzlib[bang](args)
 
 
-BBQ = BoatBangzExecutor()
-#BBQ.bangprobe('LocalMod')
-fnc = BBQ.exec_bang(LocalMod,'pwny','niko')
-ret = fnc(op,'pwy','niko')
-print(ret)
+
+# run dat
+BBE = Modulator()
+BBE.load('LocalMod')
+try:
+    retour = BBE.execute('hello','niko')
+    print('retour:',retour)
+except:
+    pass
+
