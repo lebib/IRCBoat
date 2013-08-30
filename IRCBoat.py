@@ -26,9 +26,9 @@ import ssl
 from urllib.request import urlopen
 from urllib.error import URLError
 from GetBIBState import GetBIBState
+from BoatBangzExecutor import Modulator
 
-
-class IRCBoat:
+class IRCBoat(Modulator):
     def __init__(self, host, port, nick, ident, realname):
         self.host = host
         self.port = port
@@ -44,7 +44,9 @@ class IRCBoat:
         self.buffer = ''
         self.timestamp = time.time()
         self.refreshrate = 5
-
+        self.BBE = Modulator()
+        self.BBE.load('LocalMod')
+        print(self.BBE.bangzlib)
     # Methodes
     #
     # Methodes de connexions
@@ -69,31 +71,41 @@ class IRCBoat:
     def is_boat_user(self, nick):
         return nick in self.users
 
+    def clean_buffer(self,buffr):
+        clean = []
+        for item in buffr:
+            clean.append(item.strip())
+        return clean
+
     #BOAT Commandz
     def exec_bang(self, msg):  # anciennement execBoatCmd
         nick = msg[0].split('!')[0].split(':')[1]
-        dst = msg[2]
-        cmd = msg[3].strip()
+        dst = msg[2] # chan
+        cmd = msg[3].strip().split(':')[1]
         if self.is_boat_user(nick):
             print(('Utilisateur ' + nick + " : BOAT'd"))
             if dst.find('#') != -1:
-                #if is_bang(cmd, msg[4:]):
-                    # passe à l'object d'interface de modules custom
-                    # code here !
-                    # BangModule.exec(user, bang, args)
-                if cmd == ':!op':
-                    self.set_mode(dst, '+o', nick)
+                if self.is_bang(cmd):
+                    msg = self.clean_buffer(msg)
+                    bang = cmd[1:]
+                    print('bang :',bang) # my baby shot me down
+                    if bang in self.BBE.bangzlib:
+                        retour = self.BBE.execute(bang,msg[4:],dst,nick)
+                        for cmd in retour:
+                            self.raw_irc_command(cmd)
+
         # TODO : methode d'auth séparée
         elif dst.find(self.nick) != -1:
-            if msg[3].find('login') and msg[4].find('password'):
+            if msg[3].find('login') and msg[4].find('passware'):
                 self.users.append(nick)
                 print(nick + ' ajouté aux utilisateurs !')
 
-    def is_bang(self, cmd, args):
-        cmd = cmd.split(':')[1]
-        if cmd[1] == '!':
+    def is_bang(self, cmd):
+        if cmd[0] == '!':
             # TODO : cherche si c'est un bang qui retourne une fonction
-            return 1
+            return True
+        else:
+            return False
 
     # Data processing
     def listen_input(self):
