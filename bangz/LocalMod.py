@@ -13,7 +13,6 @@
 # comme msg, join, modes, etc, que boat et les modules hériteraient ?)
 
 class BangModule:
-''' Fonctions basiques pour tests... '''
 
     def __init__(self):
         self.bangz = {

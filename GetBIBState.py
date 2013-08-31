@@ -5,9 +5,7 @@ from html.parser import HTMLParser
 
 
 class GetBIBState(HTMLParser):
-
     ''' Parse le site du bib pour rechercher son état ouvert ou fermé '''
-
     def __init__(self):
         self.state = 0
         HTMLParser.__init__(self)
