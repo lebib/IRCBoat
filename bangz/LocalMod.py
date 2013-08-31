@@ -2,9 +2,19 @@
 #-*- coding: utf-8 -*-
 
 
+# PROTOTYPE DE MODULE BANG
+#
+# TODO :
+#
+# Callback methodes de boat ?
+# Sinon, simplifier le retour avec des methodes de formatage
+# pour ne pas devoir construire une raw à chaque fois
+# (Sous forme d'une classe contenant les methode irc de base
+# comme msg, join, modes, etc, que boat et les modules hériteraient ?)
 
 class BangModule:
 ''' Fonctions basiques pour tests... '''
+
     def __init__(self):
         self.bangz = {
             'hello': self.hello,

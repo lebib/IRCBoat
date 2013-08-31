@@ -6,6 +6,7 @@
 # Gestion d'exeption,
 # redondance de bangs,
 # controle input utilisateurs
+#
 
 class Modulator:
 

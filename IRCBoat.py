@@ -81,7 +81,7 @@ class IRCBoat(Modulator):
         return clean
 
     # BOAT Commandz
-    def exec_bang(self, msg):  # anciennement execBoatCmd
+    def exec_bang(self, msg):  # à rename..
         nick = msg[0].split('!')[0].split(':')[1]
         dst = msg[2]  # chan
         cmd = msg[3].strip().split(':')[1]
