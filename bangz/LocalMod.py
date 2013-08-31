@@ -2,8 +2,9 @@
 #-*- coding: utf-8 -*-
 
 
-class BangModule:
 
+class BangModule:
+''' Fonctions basiques pour tests... '''
     def __init__(self):
         self.bangz = {
             'hello': self.hello,

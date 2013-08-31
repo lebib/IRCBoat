@@ -2,12 +2,16 @@
 #-*- coding: utf-8 -*-
 
 # /!\ CHANTIER /!\
+# TODO :
+# Gestion d'exeption,
+# redondance de bangs,
+# controle input utilisateurs
 
 class Modulator:
 
     def __init__(self):
         self.bangzlib = {}
-        print('Done!')
+
     def load(self, filename):
         mod = __import__('bangz.' + filename)
         mod = getattr(mod,filename)
@@ -18,19 +22,8 @@ class Modulator:
             self.bangzlib[bang] = func
 
     def execute(self, bang, args, dst, nick):
-        print('exec',args)
-        # TODO : gestion d'exeptions
         feedback = dst + '!' + nick
         return self.bangzlib[bang](args, feedback)
 
 
-
-# run dat
-#BBE = Modulator()
-#BBE.load('LocalMod')
-#try:
-    #retour = BBE.execute('hello','niko')
-    #print('retour:',retour)
-#except:
-    #pass
 

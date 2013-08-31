@@ -3,23 +3,23 @@
 #
 #
 #
-# A l'attention des nerds pisseurs de codes de BOAT :
+# A l'attention des singes codeurs de BOAT :
 #
-# Convention de nommage (PEP-8)
-# classes : CorrectClassName
-# exceptions : IncorrectClassNameError (suffixe "Error" !)
-# fonctions : get_correct_number()
-# méthodes : get_correct_number(self, arg1=None, arg2, arg3)
-# arguments des méthodes et fonctions : get_correct_number(random=False, arg2)
-# variables : number = my_object.get_correct_number()
-# constantes : ANSWER_TO_LIFE_UNIVERSE = 42
+# Convention de nommage (PEP-8):
+    # classes : CorrectClassName
+    # exceptions : IncorrectClassNameError (suffixe "Error" !)
+    # fonctions : get_correct_number()
+    # méthodes : get_correct_number(self, arg1=None, arg2, arg3)
+    # arguments des méthodes et fonctions : get_correct_number(random=False, arg2)
+    # variables : number = my_object.get_correct_number()
+    # constantes : ANSWER_TO_LIFE_UNIVERSE = 42
 #
 #
 #
-#imports utiles aux anciennes fonctions, à moduler plus tard (pour moi)
-#from fractions import Fraction as fr
-#from random import randrange
-#import sys, random, math
+# imports utiles aux anciennes fonctions, à moduler plus tard (pour moi)
+# from fractions import Fraction as fr
+# from random import randrange
+# import sys, random, math
 import socket
 import time
 import ssl
@@ -28,7 +28,9 @@ from urllib.error import URLError
 from GetBIBState import GetBIBState
 from BoatBangzExecutor import Modulator
 
+
 class IRCBoat(Modulator):
+
     def __init__(self, host, port, nick, ident, realname):
         self.host = host
         self.port = port
@@ -51,6 +53,7 @@ class IRCBoat(Modulator):
     #
     # Methodes de connexions
     # TODO : Fonction de connection normale
+
     def connect(self):
         pass
 
@@ -58,29 +61,29 @@ class IRCBoat(Modulator):
         """Connection au serveur en SSL"""
         self.socket.connect((self.host, self.port))
         self.socket = ssl.wrap_socket(self.socket, keyfile=None,
-                                certfile=None, server_side=False,
-                                do_handshake_on_connect=False,
-                                suppress_ragged_eofs=True)
+                                      certfile=None, server_side=False,
+                                      do_handshake_on_connect=False,
+                                      suppress_ragged_eofs=True)
         self.raw_irc_command('NICK ' + self.nick)
         print(('USER ' + self.ident + ' ' + self.host + ' :' + self.realname))
         self.raw_irc_command('USER ' + self.ident + ' ' + self.host + ' '
-                        + self.host + ' :' + self.realname)
+                             + self.host + ' :' + self.realname)
         print('Connexion OK')
 
-    #Authentication processing TODO
+    # Authentication processing TODO
     def is_boat_user(self, nick):
         return nick in self.users
 
-    def clean_buffer(self,buffr):
+    def clean_buffer(self, buffr):
         clean = []
         for item in buffr:
             clean.append(item.strip())
         return clean
 
-    #BOAT Commandz
+    # BOAT Commandz
     def exec_bang(self, msg):  # anciennement execBoatCmd
         nick = msg[0].split('!')[0].split(':')[1]
-        dst = msg[2] # chan
+        dst = msg[2]  # chan
         cmd = msg[3].strip().split(':')[1]
         if self.is_boat_user(nick):
             print(('Utilisateur ' + nick + " : BOAT'd"))
@@ -88,9 +91,9 @@ class IRCBoat(Modulator):
                 if self.is_bang(cmd):
                     msg = self.clean_buffer(msg)
                     bang = cmd[1:]
-                    print('bang :',bang) # my baby shot me down
+                    print('bang :', bang)  # my baby shot me down
                     if bang in self.BBE.bangzlib:
-                        retour = self.BBE.execute(bang,msg[4:],dst,nick)
+                        retour = self.BBE.execute(bang, msg[4:], dst, nick)
                         for cmd in retour:
                             self.raw_irc_command(cmd)
 
@@ -124,7 +127,7 @@ class IRCBoat(Modulator):
         self.buffer = ''
         try:
             self.buffer = str(self.socket.recv(4096).decode('utf-8'))
-        except: # TODO : présicer l'exception
+        except:  # TODO : présicer l'exception
             print('Erreur de récupération du buffer')
         print('Buffer : ')
         print(self.buffer)
@@ -138,7 +141,7 @@ class IRCBoat(Modulator):
         '''Dump du buffer (debug)'''
         print(self.socket.recv(4096))
 
-    #Basic IRC methodz
+    # Basic IRC methodz
     def pong(self, ping):
         ''' Fonction de réponse aux ping'''
         self.raw_irc_command('PONG ' + ping)
@@ -169,15 +172,15 @@ class IRCBoat(Modulator):
         ''' Envoie brut au socket '''
         self.socket.send(bytes(data, 'UTF-8'))
 
-    #Custom Bib methodz
+    # Custom Bib methodz
     # à moduler !
     def dtopic(self, msg=''):
         """Modifie le topic de #discutoire"""
         if msg != '':
             self.discutopic = msg
         self.topic('#discutoire', '[ ' +
-        ('BIB Ouvert' if self.bibstate else 'BIB Fermé')
-        + ' ][ ' + self.discutopic + ' ]' + self.hardtopic)
+                  ('BIB Ouvert' if self.bibstate else 'BIB Fermé')
+                   + ' ][ ' + self.discutopic + ' ]' + self.hardtopic)
 
     def check_web_status(self):
         ''' Vérifie la connectivité vers le site web du BIB '''
@@ -204,7 +207,7 @@ class IRCBoat(Modulator):
             print('Ouvert !')
             return 1
         else:
-            #error !
+            # error !
             print('Erreur sur le retour du statut')
             return 2
 

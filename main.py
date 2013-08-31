@@ -7,14 +7,14 @@ import time
 
 
 boat = IRCBoat('irc.pastafarai.me',
-                    1337, 'funnyBOAT', 'V1.3', 'John BOAT')
-#BBE = Modulator()
-#BBE.load('LocalMod')
+               1337, 'funnyBOAT', 'V1.3', 'John BOAT')
+# BBE = Modulator()
+# BBE.load('LocalMod')
 boat.ssl_connect()
 time.sleep(0.5)
 boat.join("#discutoire")
 
 
 while 1:
-    #boat.refresh_bib_status()
+    # boat.refresh_bib_status()
     boat.listen_input()
