@@ -23,13 +23,11 @@
 import socket
 import time
 import ssl
+import os
 from urllib.request import urlopen
 from urllib.error import URLError
-from GetBIBState import GetBIBState
-from BoatBangzExecutor import Modulator
 
-
-class IRCBoat(Modulator):
+class IRCBoat():
 
     def __init__(self, host, port, nick, ident, realname):
         self.host = host
@@ -37,18 +35,32 @@ class IRCBoat(Modulator):
         self.nick = nick
         self.ident = ident
         self.realname = realname
-        self.users = ['niko', 'pwny']
-        self.bibstate = 0
-        self.biburl = 'http://lebib.org'
-        self.discutopic = "BOAT'd"
-        self.hardtopic = '[ http://lebib.org/ ] [ 7 Rue François Périer, 34000 Montpellier ]'
+        self.users = ['niko', 'pwny'] # Default users for BOAT
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.buffer = ''
+        self.buffer = '' # Data read from chanz
+        self.bangzlist = {} # Dictionnary containing the module functions availables
         self.timestamp = time.time()
         self.refreshrate = 5
-        self.BBE = Modulator()
-        self.BBE.load('LocalMod')
-        print(self.BBE.bangzlib)
+        self.modulez = {} # Dictionnary containing the modules installed
+
+    def load_module(self, modulename):
+        if modulename not in self.modulez.keys():
+            newmodule = __import__('modulez.' + modulename + '.' + modulename, fromlist=[modulename])
+            print(newmodule)
+            print(dir(newmodule))
+            #moduleclass_ = getattr(newmodule, "BaseIRC")
+            moduleclass_ = getattr(newmodule, modulename)
+
+            self.modulez[modulename] = moduleclass_(self)
+            print(modulename + ' loaded')
+            for bang, func in self.modulez[modulename].bangz.items():
+                if bang in self.bangzlist.keys():
+                    print("Le bang est déjà utilisé => ignoré")
+                else:
+                    self.bangzlist[bang] = func
+        else:
+            print("Module déjà chargé")
+
     # Methodes
     #
     # Methodes de connexions
@@ -85,18 +97,17 @@ class IRCBoat(Modulator):
         nick = msg[0].split('!')[0].split(':')[1]
         dst = msg[2]  # chan
         cmd = msg[3].strip().split(':')[1]
+        argz = msg[4:]
         if self.is_boat_user(nick):
             print(('Utilisateur ' + nick + " : BOAT'd"))
             if dst.find('#') != -1:
                 if self.is_bang(cmd):
                     msg = self.clean_buffer(msg)
-                    bang = cmd[1:]
+                    bang = cmd.split('!')[1]
                     print('bang :', bang)  # my baby shot me down
-                    if bang in self.BBE.bangzlib:
-                        retour = self.BBE.execute(bang, msg[4:], dst, nick)
-                        for cmd in retour:
-                            self.raw_irc_command(cmd)
-
+                    if bang in self.bangzlist.keys():
+                        retour = self.bangzlist[bang](dst, nick, argz)
+                        print(retour)
         # TODO : methode d'auth séparée
         elif dst.find(self.nick) != -1:
             if msg[3].find('login') and msg[4].find('passware'):
@@ -156,8 +167,8 @@ class IRCBoat(Modulator):
         self.raw_irc_command('PRIVMSG ' + dest + ' :' + message)
         print(">" + dest, ":", message)
 
-    def topic(self, chan, msg):
-        self.raw_irc_command('TOPIC ' + chan + ' :' + msg)
+    def topic(self, chan, topic):
+        self.raw_irc_command('TOPIC ' + chan + ' :' + topic)
 
     def set_mode(self, chan, mode, nick=None):
         ''' Change les modes d\'un salon ou d\'un user '''
@@ -172,49 +183,3 @@ class IRCBoat(Modulator):
         ''' Envoie brut au socket '''
         self.socket.send(bytes(data, 'UTF-8'))
 
-    # Custom Bib methodz
-    # à moduler !
-    def dtopic(self, msg=''):
-        """Modifie le topic de #discutoire"""
-        if msg != '':
-            self.discutopic = msg
-        self.topic('#discutoire', '[ ' +
-                  ('BIB Ouvert' if self.bibstate else 'BIB Fermé')
-                   + ' ][ ' + self.discutopic + ' ]' + self.hardtopic)
-
-    def check_web_status(self):
-        ''' Vérifie la connectivité vers le site web du BIB '''
-        try:
-            usock = urlopen(self.biburl)
-            bibpage = urlopen(self.biburl).read()
-            usock.close()
-            parser = GetBIBState()
-            parser.feed(bibpage.decode('utf8'))
-            self.bibstate = parser.get_state()
-        except URLError:
-            print('urlopen timeout')
-            pass
-
-    def check_bib_state(self):
-        """Récupération de l'état du BIB"""
-        self.oldstate = self.bibstate
-        print('Getting bib status...')
-        self.check_web_status()
-        if self.bibstate == 0:  # closed !
-            print('Fermé !')
-            return 0
-        elif self.bibstate == 1:  # openBIB!
-            print('Ouvert !')
-            return 1
-        else:
-            # error !
-            print('Erreur sur le retour du statut')
-            return 2
-
-    def refresh_bib_status(self):
-        ''' Raffraîchit le topic selon l\'état  ouvert ou fermé du BIB '''
-        if (time.time() - self.timestamp >= self.refreshrate):
-            if self.check_bib_state() != self.oldstate:
-                self.dtopic()
-                self.timestamp = time.time()
-                self.oldstate = self.bibstate

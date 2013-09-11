@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 
@@ -7,11 +8,14 @@ import time
 
 
 boat = IRCBoat('irc.pastafarai.me',
-                    1337, 'funnyBOAT', 'V1.3', 'John BOAT')
+                    1337, 'N1K0BOAT', 'V1.3', 'John BOAT')
 
 boat.ssl_connect()
 time.sleep(0.5)
-boat.join("#discutoire")
+boat.join("#test")
+boat.join('#balek')
+boat.load_module("BaseIRC")
+boat.load_module("ModulezManager")
 
 
 while 1:
