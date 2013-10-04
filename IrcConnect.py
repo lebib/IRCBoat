@@ -27,7 +27,8 @@ class IRCConnect:
 	
 	def send(self, data):
 		self.socket.send(data.encode('utf-8'))
-
+	
+	#Work on the encodage: make it in unicode for the special characters.
 	def read_stream(self): #Rework that.
 		self.buffer = ''
 		self.buffer = self.socket.recv(2040)
