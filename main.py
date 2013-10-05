@@ -23,7 +23,7 @@
 #
 #	if text.find('PING') != -1:
 #		irc.send('PONG ' + text.split()[1] + '\r\n')
-from IrcConnect import *
+from IRCConnect import *
 
 irc = IRCConnect('irc.pastafarai.me',1337,'ircbot','ircbot','irc bot')
 irc.ssl_connect()
