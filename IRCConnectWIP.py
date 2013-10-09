@@ -55,15 +55,3 @@ class IRCConnect:
       self.stream_content.pop()
       pass
     return self.stream_content
-
-  def listen_input(self): #will go on IRCBoat
-    """Read the stream content and do things in consequences.
-    """
-    lines = self.read_stream()
-    if lines == '':
-      return
-    print(lines)
-    for line in lines:
-      msg = line.split(' ')
-      if msg[0] == 'PING':
-        self.send('PONG ' + msg[1].split(':')[1]) # must be overlated
