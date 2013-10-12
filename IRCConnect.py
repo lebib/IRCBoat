@@ -47,7 +47,7 @@ class IRCConnect:
     Return the content of the current stream.
     """
     self.stream_content = ''
-    self.stream_content = self.socket.recv(2040)
+    self.stream_content = str(self.socket.recv(2040).decode('utf-8'))
     if self.stream_content != '':
       self.stream_content = self.stream_content.split('\n')
       self.stream_content.pop()

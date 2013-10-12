@@ -5,5 +5,3 @@ irc = IRCConnect('irc.pastafarai.me',1337,'ircbot','ircbot','irc bot')
 #irc.send('JOIN #testbot2')
 #irc.send('PRIVMSG #testbot2 :Hello World')
 boat = IRCBoat(irc)
-while 1:
-  print irc.read_stream()
