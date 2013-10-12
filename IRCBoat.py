@@ -31,6 +31,7 @@ class IRCBoat:
     Parse the text and use functions for
     each case.
     """
+    pass
 
   ########################
   # IRC BASIC'S COMMANDS #
@@ -59,7 +60,7 @@ class IRCBoat:
   def message(self, dest, msg):
     """str, str
     Send the message to the dest.
-    Dest can be a channel or an other user.
+    Dest can be a channel or an user.
     """
     self.irc_stream.send('PRIVMSG '+dest+' :'+msg)
   def set_mode(self, chan, mode, nick=None):
