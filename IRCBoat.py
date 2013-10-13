@@ -1,14 +1,15 @@
+from time import gmtime, strftime
 from IRCConnect import IRCConnect
 
 class IRCBoat:
   def __init__(self, irc_stream):
     self.irc_stream = irc_stream
     self.irc_stream.ssl_connect()
-    self.irc_stream.send('NICK '+self.irc_stream.nick)
-    self.irc_stream.send('USER '+self.irc_stream.ident+' '+self.irc_stream.host+' '
-      +self.irc_stream.host+' :'+self.irc_stream.realname)
-    self.irc_stream.send('JOIN #testbot2')
-    self.irc_stream.send('PRIVMSG #testbot2 :Hello World')
+    self.nick(self.irc_stream.nick)
+    self.user(self.irc_stream.ident, self.irc_stream.host,
+      self.irc_stream.realname)
+    self.join('#testbot2')
+    self.message('#testbot2','Hello World')
     while 1:
       self.listen_input()
 
@@ -20,18 +21,21 @@ class IRCBoat:
       print(lines)
       for line in lines:
         msg = line.split(' ')
-        #Insert analytics functions here.
+        self.parser(msg)
 
   #######################
   # ANALYTICS FUNCTIONS #
   #######################
   
-  def parser(self, stream_content):
-    """str
+  def parser(self, msg):
+    """list
     Parse the text and use functions for
     each case.
     """
-    pass
+    if msg[0] == 'PING':
+      self.pong(msg[1])
+    if msg[1] == 'PRIVMSG':
+      self.message('#testbot2',strftime("%a, %d %b %Y %H:%M:%S +0000",gmtime()))
 
   ########################
   # IRC BASIC'S COMMANDS #
@@ -46,7 +50,7 @@ class IRCBoat:
     """str, str, str
     Auth on the server.
     """
-    self.irc_stream.send('USER '+user+' '+host+' '+host+' :'+realname)
+    self.irc_stream.send('USER '+ident+' '+host+' '+host+' :'+realname)
   def pong(self, ping):
     """str
     Answer to the server's ping.
