@@ -15,12 +15,21 @@ class URLLogger():
 
     def __init__(self, boat):
         self.bangz = {
-            'urlz': self.urlz
+            'urlz': self.urlz,
+            'logswitch' : self.logswitch
             }
         self.boat = boat
-        self.json = open('modulez/URLLogger/loggerdata.json','r+')
-        self.dolog = True
+        #self.json = open('modulez/URLLogger/loggerdata.json','r+')
+        self.dolog = False
         self.disclosure = True
+
+    def logswitch(self, dest, source, argz):
+        if self.dolog == True:
+            self.dolog = False
+            self.boat.msg(dest,'Logging is OFF')
+        elif self.dolog == False:
+            self.dolog = True
+            self.boat.msg(dest,'Logging is ON')
 
     def eventchanmsg(self,source,dest,text):
         print('source:',source,'dest:',dest,'text:',text)
