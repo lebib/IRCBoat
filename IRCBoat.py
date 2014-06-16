@@ -26,6 +26,7 @@ import socket
 import time
 import ssl
 import os
+import sys
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -39,6 +40,7 @@ class IRCBoat():
         self.realname = realname
         self.users = ['niko', 'pwny'] # Default users for BOAT
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.settimeout(20)
         self.buffer = '' # Data read from chanz
         self.bangzlist = {} # Dictionnary containing the module functions availables
         self.timestamp = time.time()
@@ -106,11 +108,10 @@ class IRCBoat():
     def event_bcast(self,event,source, dest, text):
       print('bcast:',event,source, dest, text)
       for mod in self.modulez.items():
-        print(mod,event)
         try:
           getattr(mod[1],event)(source, dest, text)
         except AttributeError:
-          print('no',event,'for',mod[1],':(')
+          print('no',event,'for',mod[1].__class__.__name__,':(')
 
     def handle_event(self, msg):
         print('msg',msg)
@@ -119,9 +120,9 @@ class IRCBoat():
         text = ''
         for i in msg[3:]:
           text += i + ' '
-        print('TEXT before :', text)
+        #print('TEXT before :', text)
         text = text[1:].rstrip()
-        print('TEXT after :', text)
+        #print('TEXT after :', text)
         dest = msg[2]
         try:
           source = msg[0].split('!')[0].split(':')[1]
@@ -137,9 +138,12 @@ class IRCBoat():
               print('command')
               return
               # handle_cmd
-        #-----------------------------------------------------------------
+        #------------------------------------------------------------------
           if dest.find('#') != -1: # channel message ----------------------
-              self.event_bcast('eventchanmsg',source,dest,text)
+              if msg[3].find(':\x01ACTION') != -1:
+                self.event_bcast('eventchanaction',source,dest,text)
+              else:
+                self.event_bcast('eventchanmsg',source,dest,text)
               if self.is_bang(cmd): # which is a bang
                   msg = self.clean_buffer(msg)
                   bang = cmd.split('!')[1]
@@ -212,11 +216,16 @@ class IRCBoat():
         self.buffer = ''
         try:
             self.buffer = str(self.socket.recv(4096).decode('utf-8'))
-        except socket.error:
-            print(sys.exc_info()[0])
-            print('Erreur de récupération du buffer')
-        print('Buffer : ')
-        print(self.buffer)
+            print('Buffer : ')
+            print(self.buffer)
+        except socket.error as e:
+            err = e.args[0]
+            if err == 'timed out':
+              #print('debug :',err)
+              pass
+            else:
+              print('Error while receiving buffer :',err)
+
         if self.buffer != '':
             self.buffer = self.buffer.split("\n")
             self.buffer.pop()

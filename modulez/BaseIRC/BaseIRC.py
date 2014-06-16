@@ -29,6 +29,3 @@ class BaseIRC():
         for arg in argz:
             topic = topic + ' ' + arg
         self.boat.topic(dst, topic)
-
-    def eventjoin(self,source,dest,text):
-      print('IT WURKS',source,text)

@@ -36,6 +36,7 @@ class URLLogger():
         for url in self.find_urls(text):
             print('URL :', url)
             self.handle_urlz(source,dest,text,url)
+
     def get_page_title(self,url):
         soup = url + ' down or bad link : '
         try:
@@ -121,5 +122,3 @@ class URLLogger():
                                ''')
         for url in re.findall(pat_url, text):
             yield url[0]
-
-            #self.boat.msg(dest,soup.title.string)
