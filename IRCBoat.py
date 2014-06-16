@@ -20,6 +20,8 @@
 # from fractions import Fraction as fr
 # from random import randrange
 # import sys, random, math
+
+# next on pwny rox at python : class BOATModule with eventhandle funcz
 import socket
 import time
 import ssl
@@ -58,16 +60,24 @@ class IRCBoat():
                     print("Le bang est déjà utilisé => ignoré")
                 else:
                     self.bangzlist[bang] = func
+
+            print('dbug', self.modulez)
         else:
             print("Module déjà chargé")
 
     # Methodes
     #
     # Methodes de connexions
-    # TODO : Fonction de connection normale
+
 
     def connect(self):
-        pass
+        """Connection au serveur"""
+        self.socket.connect((self.host, self.port))
+        self.raw_irc_command('NICK ' + self.nick)
+        print(('USER ' + self.ident + ' ' + self.host + ' :' + self.realname))
+        self.raw_irc_command('USER ' + self.ident + ' ' + self.host + ' '
+                             + self.host + ' :' + self.realname)
+        print('Connexion OK')
 
     def ssl_connect(self):
         """Connection au serveur en SSL"""
@@ -93,26 +103,79 @@ class IRCBoat():
         return clean
 
     # BOAT Commandz
-    def exec_bang(self, msg):  # à rename..
-        nick = msg[0].split('!')[0].split(':')[1]
-        dst = msg[2]  # chan
-        cmd = msg[3].strip().split(':')[1]
-        argz = msg[4:]
-        if self.is_boat_user(nick):
-            print(('Utilisateur ' + nick + " : BOAT'd"))
-            if dst.find('#') != -1:
-                if self.is_bang(cmd):
-                    msg = self.clean_buffer(msg)
-                    bang = cmd.split('!')[1]
-                    print('bang :', bang)  # my baby shot me down
-                    if bang in self.bangzlist.keys():
-                        retour = self.bangzlist[bang](dst, nick, argz)
-                        print(retour)
-        # TODO : methode d'auth séparée
-        elif dst.find(self.nick) != -1:
-            if msg[3].find('login') and msg[4].find('passware'):
-                self.users.append(nick)
-                print(nick + ' ajouté aux utilisateurs !')
+    def event_bcast(self,event,source, dest, text):
+      print('bcast:',event,source, dest, text)
+      for mod in self.modulez.items():
+        print(mod,event)
+        try:
+          getattr(mod[1],event)(source, dest, text)
+        except AttributeError:
+          print('no',event,'for',mod[1],':(')
+
+    def handle_event(self, msg):
+        print('msg',msg)
+        if len(msg) < 2:
+          return
+        text = ''
+        for i in msg[3:]:
+          text += i + ' '
+        print('TEXT before :', text)
+        text = text[1:].rstrip()
+        print('TEXT after :', text)
+        dest = msg[2]
+        try:
+          source = msg[0].split('!')[0].split(':')[1]
+        except IndexError as e:
+          print('something awful happend :',e)
+        if msg[1] == 'PRIVMSG':
+          # for bangz ----
+          cmd = msg[3].strip('\r').strip('\n').split(':')[1]
+          argz = msg[4:]
+          if cmd == '' :
+              cmd = ' '
+          if dest.find(self.nick) != -1: # private message to BOAT --------
+              print('command')
+              return
+              # handle_cmd
+        #-----------------------------------------------------------------
+          if dest.find('#') != -1: # channel message ----------------------
+              self.event_bcast('eventchanmsg',source,dest,text)
+              if self.is_bang(cmd): # which is a bang
+                  msg = self.clean_buffer(msg)
+                  bang = cmd.split('!')[1]
+                  print('bang :', bang)  # my baby shot me down
+                  if bang in self.bangzlist.keys():
+                      retour = self.bangzlist[bang](dest, source, argz)
+                      print(retour)
+        # ---------------------------------------------------------------
+        if msg[1] == 'NICK':
+          print('eventnick')
+          self.event_bcast('eventnick',source, dest, text)
+        if msg[1] == 'MODE':
+          print('eventmode')
+          self.event_bcast('eventmode',source, dest, text)
+        if msg[1] == 'QUIT':
+          print('eventquit')
+          self.event_bcast('eventquit',source, dest, text)
+        if msg[1] == 'JOIN':
+          print('eventjoin')
+          self.event_bcast('eventjoin',source, dest, text)
+        if msg[1] == 'PART':
+          print('eventpart')
+          self.event_bcast('eventpart',source, dest, text)
+        if msg[1] == 'MODE':
+          print('eventmode')
+          self.event_bcast('eventmode',source, dest, text)
+        if msg[1] == 'KICK':
+          print('eventkick')
+          self.event_bcast('eventkick',source, dest, text)
+        if msg[1] == 'TOPIC':
+          print('eventtopic')
+          self.event_bcast('eventtopic',source, dest, text)
+        if msg[1] == 'NOTICE':
+          print('eventnotice')
+          self.event_bcast('eventnotice',source, dest, text)
+
 
     def is_bang(self, cmd):
         if cmd[0] == '!':
@@ -125,20 +188,32 @@ class IRCBoat():
     def listen_input(self):
         ''' Écoute les messages du serveur '''
         lines = self.process_buffer()
+        res = ''
         for line in lines:
             msg = line.split(' ')
             if msg[0] == 'PING':
                 self.pong(msg[1].split(":")[1])
-            if msg[1] == 'PRIVMSG':
-                self.exec_bang(msg)
-                # TODO : méthode is_bang(arg1)
+            else:
+              try:
+                  res = socket.getaddrinfo(msg[0].strip(':'),self.port)[1][4][0]
+              except socket.gaierror:
+                  pass
+              except IndexError:
+                  pass
+              if res == self.host:
+                  print('server :', line)
+
+              else:
+                  self.handle_event(msg)
+
 
     def process_buffer(self):
         ''' Traitement initial du buffer '''
         self.buffer = ''
         try:
             self.buffer = str(self.socket.recv(4096).decode('utf-8'))
-        except:  # TODO : présicer l'exception
+        except socket.error:
+            print(sys.exc_info()[0])
             print('Erreur de récupération du buffer')
         print('Buffer : ')
         print(self.buffer)
@@ -163,8 +238,8 @@ class IRCBoat():
         self.raw_irc_command('JOIN ' + chan)
 
     def msg(self, dest, message):
-        ''' Envoie un message sur un chan ou un user '''
-        self.raw_irc_command('PRIVMSG ' + dest + ' :' + message)
+        ''' Envoie un message à un chan ou un user '''
+        self.raw_irc_command('PRIVMSG ' + dest + ' :' + str(message))
         print(">" + dest, ":", message)
 
     def topic(self, chan, topic):
@@ -181,5 +256,7 @@ class IRCBoat():
 
     def send(self, data):
         ''' Envoie brut au socket '''
-        self.socket.send(bytes(data, 'UTF-8'))
-
+        try:
+          self.socket.send(bytes(data, 'UTF-8'))
+        except socket.error:
+          print('oh shit')

@@ -7,15 +7,17 @@ from IRCBoat import IRCBoat
 import time
 
 
-boat = IRCBoat('irc.pastafarai.me',
-                    1337, 'N1K0BOAT', 'V1.3', 'John BOAT')
+boat = IRCBoat('5.39.80.229',
+                    6667, 'tehBOAT', 'V1.3', 'John BOAT')
 
-boat.ssl_connect()
+boat.connect()
 time.sleep(0.5)
-boat.join("#test")
+boat.join("#discutoire")
 boat.join('#balek')
 boat.load_module("BaseIRC")
 boat.load_module("ModulezManager")
+boat.load_module('Souleicous')
+boat.load_module('URLLogger')
 
 
 while 1:
