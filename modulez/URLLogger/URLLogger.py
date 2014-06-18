@@ -42,10 +42,12 @@ class URLLogger():
         try:
             soup = BeautifulSoup(urlopen(url,timeout=5))
             ret = soup.title.string
+            ret += ' ' + soup.h1.string
         except ValueError:
             try:
                 soup = BeautifulSoup(urlopen('http://' + url, timeout=5))
-                ret = soup.title.string
+                ret = 'Title : ' + soup.title.string
+                ret += ' / ' + soup.h1.string
             except ValueError as e:
                 print(e)
         except urllib.error.URLError as e:
@@ -61,6 +63,7 @@ class URLLogger():
         if self.disclosure == True:
             print('DISCLOSING')
             title = self.get_page_title(url)
+            title = title
             self.boat.msg(dest,title)
         if self.dolog == True:
             data = {}

@@ -16,4 +16,7 @@ Class Auth():
     def __init__(self, boat):
         self.bangz = {
             }
+        self.pcmd = {
+          'identify': self.identify
+        }
         self.boat = boat

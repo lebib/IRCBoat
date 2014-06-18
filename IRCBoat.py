@@ -14,19 +14,13 @@
     # variables : number = my_object.get_correct_number()
     # constantes : ANSWER_TO_LIFE_UNIVERSE = 42
 #
-#
-#
-# imports utiles aux anciennes fonctions, à moduler plus tard (pour moi)
-# from fractions import Fraction as fr
-# from random import randrange
-# import sys, random, math
 
-# next on pwny rox at python : class BOATModule with eventhandle funcz
 import socket
 import time
 import ssl
 import os
 import sys
+import re
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -43,6 +37,7 @@ class IRCBoat():
         self.socket.settimeout(20)
         self.buffer = '' # Data read from chanz
         self.bangzlist = {} # Dictionnary containing the module functions availables
+        self.pcmdlist = {} # Dict. containing modules private funcs
         self.timestamp = time.time()
         self.refreshrate = 5
         self.modulez = {} # Dictionnary containing the modules installed
@@ -52,17 +47,27 @@ class IRCBoat():
             newmodule = __import__('modulez.' + modulename + '.' + modulename, fromlist=[modulename])
             print(newmodule)
             print(dir(newmodule))
-            #moduleclass_ = getattr(newmodule, "BaseIRC")
             moduleclass_ = getattr(newmodule, modulename)
-
+            # loading bangz
             self.modulez[modulename] = moduleclass_(self)
-            print(modulename + ' loaded')
-            for bang, func in self.modulez[modulename].bangz.items():
-                if bang in self.bangzlist.keys():
-                    print("Le bang est déjà utilisé => ignoré")
-                else:
-                    self.bangzlist[bang] = func
+            try:
+              for bang, func in self.modulez[modulename].bangz.items():
+                  if bang in self.bangzlist.keys():
+                      print("Le bang %s est déjà utilisé => ignoré".format(bang))
+                  else:
+                      self.bangzlist[bang] = func
 
+              # loading private commands
+              for cmd, func in self.modulez[modulename].pcmd.items():
+                  if cmd in self.pcmdlist.keys():
+                      print("La commande %s existe => ignoré".format(cmd))
+                  else:
+                      self.pcmdlist[cmd] = func
+            except AttributeError as e:
+              print(e)
+              pass
+
+            print(modulename + ' loaded')
             print('dbug', self.modulez)
         else:
             print("Module déjà chargé")
@@ -106,7 +111,7 @@ class IRCBoat():
 
     # BOAT Commandz
     def event_bcast(self,event,source, dest, text):
-      print('bcast:',event,source, dest, text)
+      print('bcast:','event :',event,'source :',source,'dest :', dest, 'text :',text)
       for mod in self.modulez.items():
         try:
           getattr(mod[1],event)(source, dest, text)
@@ -120,9 +125,7 @@ class IRCBoat():
         text = ''
         for i in msg[3:]:
           text += i + ' '
-        #print('TEXT before :', text)
         text = text[1:].rstrip()
-        #print('TEXT after :', text)
         dest = msg[2]
         try:
           source = msg[0].split('!')[0].split(':')[1]
@@ -135,8 +138,10 @@ class IRCBoat():
           if cmd == '' :
               cmd = ' '
           if dest.find(self.nick) != -1: # private message to BOAT --------
-              print('command')
-              return
+              print('command :', source, cmd, argz)
+              if cmd in self.pcmdlist.keys():
+                r = self.pcmdlist[cmd](source, argz)
+              return r
               # handle_cmd
         #------------------------------------------------------------------
           if dest.find('#') != -1: # channel message ----------------------
@@ -167,9 +172,6 @@ class IRCBoat():
         if msg[1] == 'PART':
           print('eventpart')
           self.event_bcast('eventpart',source, dest, text)
-        if msg[1] == 'MODE':
-          print('eventmode')
-          self.event_bcast('eventmode',source, dest, text)
         if msg[1] == 'KICK':
           print('eventkick')
           self.event_bcast('eventkick',source, dest, text)
@@ -248,10 +250,11 @@ class IRCBoat():
 
     def msg(self, dest, message):
         ''' Envoie un message à un chan ou un user '''
-        self.raw_irc_command('PRIVMSG ' + dest + ' :' + str(message))
+        self.raw_irc_command('PRIVMSG ' + dest + ' :' + message)
         print(">" + dest, ":", message)
 
     def topic(self, chan, topic):
+        ''' Change le topic d'un chan '''
         self.raw_irc_command('TOPIC ' + chan + ' :' + topic)
 
     def set_mode(self, chan, mode, nick=None):
@@ -261,7 +264,7 @@ class IRCBoat():
 
     def raw_irc_command(self, cmd):
         """Envoie de commande IRC brute"""
-        self.send(str(cmd) + '\r\n')
+        self.send(' '.join(cmd.split()) + '\r\n')  # strip all white spaces
 
     def send(self, data):
         ''' Envoie brut au socket '''
