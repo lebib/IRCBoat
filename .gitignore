@@ -1,4 +1,4 @@
-bangz/__pycache__/*
-__pycache__/*
+*__pycache__/*
+*.pyc
 boat.nja
 modulez/Souleicous/*

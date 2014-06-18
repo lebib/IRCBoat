@@ -24,7 +24,7 @@ How-to API :
 You can write custom modules and load them in BOAT
 
 Here's the structure of a BOAT module :
-```
+```python
 
 Class BOATModules():                     # bangs are chan commands prefixed with
                                          # a '!' :
@@ -64,7 +64,8 @@ Class BOATModules():                     # bangs are chan commands prefixed with
                                          # contain the new nick and text will be empty
                                          #
 
- Here are the callback function that you can use by calling boat main instance self.boat.methodname(argz) :
+ Here are the callback function that you can use by calling boat main instance
+ self.boat.methodname(argz) :
 
 
      def join(chan):
