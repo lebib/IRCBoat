@@ -24,7 +24,7 @@ How-to API :
 You can write custom modules and load them in BOAT
 
 Here's the structure of a BOAT module :
-
+'''
 
 Class BOATModules():                     # bangs are chan commands prefixed with
                                          # a '!' :
@@ -84,6 +84,9 @@ Class BOATModules():                     # bangs are chan commands prefixed with
 
      def send(self, data):
          ''' Envoie brut au socket '''
+
+
+'''
 
  You could use any boat method found in the main class IRCBoat.py, thoses are the
  ones you should use mainly.
