@@ -62,9 +62,9 @@ Class BOATModules():                     # bangs are chan commands prefixed with
                                          # source : who did it
                                          # dest : where it happend
                                          # text : what content
-                                         # except for chanless events like nick where dest
-                                         # will contain the new nick and text will be
-                                         # empty
+                                         # except for chanless events like nick where
+                                         # des will contain the new nick and text will
+                                         # be empty
 
 
  Here are the callback function that you can use by calling boat main instance
