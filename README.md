@@ -14,7 +14,7 @@ With battery included (to be coded tho)
 
 TODO :
 
--	Add a module for authentication/user management
+-	Add a module for authentication/user management exec perms
 -	Add verification on arguments for all methods
 -	Add a module to record all links wrote on chans
 
@@ -52,17 +52,20 @@ Class BOATModules():                     # bangs are chan commands prefixed with
                                          #
     def eventjoin(self,source,dest,text):# you can also trigger on IRC event by strictly
         # code, code also code           # naming your hook function one of those name
-                                         # corresponding to various (not all for now) IRC events :
+                                         # corresponding to various (not all for now)
+                                         # IRC events :
                                          # eventjoin, eventquit, eventpart, eventnick,
-                                         # eventnotice, enventmode, eventtopic, eventkick
+                                         # eventnotice, enventmode, eventtopic,
+                                         # eventkick
                                          #
-                                         # arguments givent to the func when calling are :
-                                         # source : who
-                                         # dest : where
-                                         # text : what
-                                         # except for chanless events like nick where dest will
-                                         # contain the new nick and text will be empty
-                                         #
+                                         # arguments given to the func when calling are :
+                                         # source : who did it
+                                         # dest : where it happend
+                                         # text : what content
+                                         # except for chanless events like nick where dest
+                                         # will contain the new nick and text will be
+                                         # empty
+
 
  Here are the callback function that you can use by calling boat main instance
  self.boat.methodname(argz) :
