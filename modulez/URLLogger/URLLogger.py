@@ -6,10 +6,9 @@ from urllib.request import urlopen
 import urllib.error
 from bs4 import BeautifulSoup
 import re
-import json
 from pprint import pprint
 import socket
-
+import pickle
 
 class URLLogger():
 
@@ -19,7 +18,7 @@ class URLLogger():
             'logswitch' : self.logswitch
             }
         self.boat = boat
-        #self.json = open('modulez/URLLogger/loggerdata.json','r+')
+        self.pkl = open('modulez/URLLogger/loggerdata.pkl','rb')
         self.dolog = False
         self.disclosure = True
 
@@ -66,30 +65,29 @@ class URLLogger():
             title = title
             self.boat.msg(dest,title)
         if self.dolog == True:
-            data = {}
-            with open('modulez/URLLogger/loggerdata.json','r') as j:
+            data = []
+            with open('modulez/URLLogger/loggerdata.pkl','wb') as p:
                 try:
-                    data = json.load(j)
+                    data = pickle.load(p)
                     pprint(data)
                 except ValueError as e:
                     print('fuck',e)
-            newurl = {
-                'nick' : source,
-                'chan' : dest,
-                'url'  : url,
-                'title': self.get_page_title(url)
-            }
-            data.update(newurl)
-            pprint(data)
+                newurl = {
+                    'nick' : source,
+                    'chan' : dest,
+                    'url'  : url,
+                    'title': self.get_page_title(url)
+                    }
+                data.append(newurl)
             try:
-                with open('modulez/URLLogger/loggerdata.json','r+') as j:
-                    json.dumps(data, j)
+                with open('modulez/URLLogger/loggerdata.pkl','wb') as j:
+                    p.dump(j, data)
             except TypeError:
                 pass
         else:
             pass
     def urlz(self, dest, source, argz):
-        data = json.load(self.json)
+        data = pickle.load(self.pkl)
         pprint(data)
 
 

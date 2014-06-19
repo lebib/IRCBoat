@@ -12,13 +12,14 @@ boat = IRCBoat('5.39.80.229',
 
 boat.connect()
 time.sleep(0.5)
-boat.join("#discutoire")
+#boat.join("#discutoire")
 boat.join('#balek')
+boat.join('#test')
 boat.load_module("BaseIRC")
 boat.load_module("ModulezManager")
 boat.load_module('Souleicous')
 boat.load_module('URLLogger')
-
+boat.load_module('Auth')
 
 while 1:
     #boat.refresh_bib_status()

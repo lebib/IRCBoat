@@ -72,23 +72,19 @@ Class BOATModules():                     # bangs are chan commands prefixed with
 
 
      def join(chan):
-         ''' Joindre un chan '''
+         ''' Join a chan '''
 
      def msg(dest, message):
-         ''' Envoie un message à un chan ou un user '''
+         ''' Send a message to a chan or a user '''
 
      def topic(chan, topic):
-         ''' Change le topic d'un chan '''
+         ''' Change topic on chan '''
 
      def set_mode(chan, mode, nick=None):
-         ''' Change les modes d\'un salon ou d\'un user '''
+         ''' Change user or chan mode '''
 
      def raw_irc_command(cmd):
-         """Envoie de commande IRC brute"""
-
-     def send(self, data):
-         ''' Envoie brut au socket '''
-
+         """ Sends a raw command to the IRC Server """
 
 ```
 

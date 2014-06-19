@@ -135,10 +135,15 @@ class IRCBoat():
           # for bangz ----
           cmd = msg[3].strip('\r').strip('\n').split(':')[1]
           argz = msg[4:]
+          try: # klean up if last arg has fucke\r or nuttgri\nder
+              argz[len(argz)-1] = argz[len(argz)-1].strip('\r').strip('\n')
+          except IndexError:
+              pass
           if cmd == '' :
               cmd = ' '
           if dest.find(self.nick) != -1: # private message to BOAT --------
               print('command :', source, cmd, argz)
+              print(self.pcmdlist.keys())
               if cmd in self.pcmdlist.keys():
                 r = self.pcmdlist[cmd](source, argz)
               return r
