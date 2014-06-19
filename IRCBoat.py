@@ -111,7 +111,8 @@ class IRCBoat():
 
     # BOAT Commandz
     def event_bcast(self,event,source, dest, text):
-      print('bcast:','event :',event,'source :',source,'dest :', dest, 'text :',text)
+      print('bcast:','event :',event,'source :',source,'dest :',
+        dest, 'text :',text)
       for mod in self.modulez.items():
         try:
           getattr(mod[1],event)(source, dest, text)
@@ -146,7 +147,7 @@ class IRCBoat():
               print(self.pcmdlist.keys())
               if cmd in self.pcmdlist.keys():
                 r = self.pcmdlist[cmd](source, argz)
-              return r
+                return r
               # handle_cmd
         #------------------------------------------------------------------
           if dest.find('#') != -1: # channel message ----------------------
@@ -248,6 +249,12 @@ class IRCBoat():
         ''' Fonction de réponse aux ping'''
         self.raw_irc_command('PONG ' + ping)
         print('Ping : ' + ping)
+
+    def whois(self, nick):
+      self.raw_irc_command('WHOIS ' + nick)
+      buffer = str(self.socket.recv(2048).decode('utf-8')).split(' ')
+      #if buffer[1] == '311':
+      return [buffer[3],buffer[4],buffer[5]]
 
     def join(self, chan):
         ''' Joindre un chan '''

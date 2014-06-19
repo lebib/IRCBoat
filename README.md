@@ -26,7 +26,7 @@ You can write custom modules and load them in BOAT
 Here's the structure of a BOAT module :
 ```python
 
-Class BOATModules():                     # bangs are chan commands prefixed with
+class BOATModules():                     # bangs are chan commands prefixed with
                                          # a '!' :
     def __init__(self, boat):            # !bang arg1 arg2 arg3 ..... argn
                                          # BOAT will execute any bang seen in a
