@@ -95,16 +95,16 @@ class Auth():
       # parse
       print('user')
       if len(argz) != 2:
-        self.boat.msg(source,' user del/mod username:#chan:[lvl] ')
+        self.boat.msg(source,' user del/mod username:#chan[:lvl] ')
         return False
       try:
         username = argz[1].split(':')[0]
         chan = argz[1].split(':')[1]
         if chan[0] != '#':
-          self.boat.msg(source,' user del/mod username:#chan:[lvl] ')
+          self.boat.msg(source,' user del/mod username:#chan[:lvl] ')
           return False
       except IndexError:
-        self.boat.msg(source,' user del/mod username:#chan:[lvl] ')
+        self.boat.msg(source,' user del/mod username:#chan[:lvl] ')
         return False
       if argz[0] == 'del':
         self.boatpeople[username].remchan(chan)
@@ -112,7 +112,7 @@ class Auth():
       try:
         lvl = int(argz[1].split(':')[2])
       except (IndexError, ValueError):
-        self.boat.msg(source,' user del/mod username:#chan:[lvl] ')
+        self.boat.msg(source,' user del/mod username:#chan[:lvl] ')
         return False
       if argz[0] == 'mod':
         print('match')
