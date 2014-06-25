@@ -3,6 +3,7 @@
 import pickle
 import bcrypt
 
+
 class BOATUser():
 
   def __init__(self,username,password,globlevel=1):
@@ -167,7 +168,8 @@ class Auth():
         else:
           return False
 
-    def test(self, d, s, a):
+    
+    def test(self, d, s, a=' '):
       for i in self.boatpeople.values():
         i.dump()
 

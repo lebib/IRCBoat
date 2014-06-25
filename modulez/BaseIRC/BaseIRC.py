@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
+#from IRCBoat import level
 
 class BaseIRC():
 
@@ -18,6 +19,8 @@ class BaseIRC():
             text = text + ' ' + arg
         self.boat.msg(dst, text)
 
+
+    
     def op(self, dst, source, argz):
         self.boat.set_mode(dst, '+o', source)
 

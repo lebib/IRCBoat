@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.4
 #-*- coding: utf-8 -*-
 #
 #
@@ -21,8 +21,50 @@ import ssl
 import os
 import sys
 import re
+import pickle
 from urllib.request import urlopen
 from urllib.error import URLError
+
+#def level(flevel):
+#  print("inside lvl")
+#  def mod_exec(func):
+#    print('inside mod_exec')
+#
+#    def wrapper(fnc, dest, source, argz):
+#      print('will debug: {0},{1} {2} {3}'.format(dest, source, argz))
+#      print('inside wrapper, flevel is {0}'.format(flevel))
+#      return func(dest, source, argz)
+#
+#    return wrapper
+#  return mod_exec
+
+
+# wat is dat i dont even.
+class Referer():
+    def __init__(self):
+      self.objects = {}
+      self.pickle = "referer.pkl"
+
+
+    def add(self,obj,objname):
+      self.objects.update(obj,objname)
+
+    def rem(self,key):
+      try:
+        del self.objects[key]
+      except KeyError:
+        print('key error')
+
+    def save(self, picklez='referer.pkl'):
+        for module in self.objects.items():
+          print('in save',module)
+        return pickle.dump( self.objects, open( picklez, "wb" ) )
+
+    def load(self, picklez='referer.pkl'):
+        return pickle.load(open( picklez, "rb" ) )
+
+    def dump(self,objdict):
+      self.objects.update(objdict)
 
 class IRCBoat():
 
@@ -41,6 +83,11 @@ class IRCBoat():
         self.timestamp = time.time()
         self.refreshrate = 5
         self.modulez = {} # Dictionnary containing the modules installed
+        #self.referer = Referer()
+        try:
+          self.auth = self.modulez['Auth']
+        except KeyError:
+          print('Error loading auth module....')
 
     def load_module(self, modulename):
         if modulename not in self.modulez.keys():
@@ -69,6 +116,9 @@ class IRCBoat():
 
             print(modulename + ' loaded')
             print('dbug', self.modulez)
+            #self.referer.dump(self.modulez)
+            #self.referer.save()
+            #print(self.referer)
         else:
             print("Module déjà chargé")
 
@@ -108,6 +158,20 @@ class IRCBoat():
         for item in buffr:
             clean.append(item.strip())
         return clean
+
+    def level(flevel): # decorator for function modules TENTATIVE
+      print("inside lvl")
+      def mod_exec(func):
+        print('inside mod_exec')
+
+        def wrapper(fnc, dest, source, argz):
+          #print('will debug: {0},{1} {2} {3}'.format(dest, source, argz))
+          print('inside wrapper, flevel is {0} and boat is'.format(flevel,self))
+          return func(dest, source, argz)
+
+        return wrapper
+      return mod_exec
+
 
     # BOAT Commandz
     def event_bcast(self,event,source, dest, text):
