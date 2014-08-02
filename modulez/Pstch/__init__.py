@@ -1,25 +1,15 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 #from IRCBoat import level
+from .base import Module
 
-class BaseIRC():
 
-    def __init__(self, boat):
-        self.bangz = {
-            'say': self.say,
-            'op': self.op,
-            'join': self.join,
-            'topic': self.topic
-            }
-        self.boat = boat
-
+class PrototypeModule(Module):
     def say(self, dst, source, argz):
         text = ''
         for arg in argz:
             text = text + ' ' + arg
         self.boat.msg(dst, text)
-
-
 
     def op(self, dst, source, argz):
         self.boat.set_mode(dst, '+o', source)

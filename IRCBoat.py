@@ -62,6 +62,12 @@ class IRCBoat():
         except KeyError:
           print('Error loading auth module....')
 
+    def register_bang(self, bang_name, bang):
+        if bang_name in self.bangzlist:
+            print("Le bang {} est déjà utilisé => ignoré".format(bang))
+        else:
+            self.bangzlist[bang_name] = bang
+
     def load_module(self, modulename):
         if modulename not in self.modulez.keys():
             newmodule = __import__('modulez.' + modulename + '.' + modulename, fromlist=[modulename])
