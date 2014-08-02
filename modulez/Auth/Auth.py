@@ -168,7 +168,7 @@ class Auth():
         else:
           return False
 
-    
+
     def test(self, d, s, a=' '):
       for i in self.boatpeople.values():
         i.dump()

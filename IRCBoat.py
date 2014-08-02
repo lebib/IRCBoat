@@ -9,8 +9,8 @@
     # classes : CorrectClassName
     # exceptions : IncorrectClassNameError (suffixe "Error" !)
     # fonctions : get_correct_number()
-    # méthodes : get_correct_number(self, arg1=None, arg2, arg3)
-    # arguments des méthodes et fonctions : get_correct_number(random=False, arg2)
+    # méthodes : get_correct_number(self, arg1, arg2, arg3=None)
+    # arguments des méthodes et fonctions : get_correct_number(arg2, random=False)
     # variables : number = my_object.get_correct_number()
     # constantes : ANSWER_TO_LIFE_UNIVERSE = 42
 #
@@ -38,33 +38,6 @@ from urllib.error import URLError
 #    return wrapper
 #  return mod_exec
 
-
-# wat is dat i dont even.
-class Referer():
-    def __init__(self):
-      self.objects = {}
-      self.pickle = "referer.pkl"
-
-
-    def add(self,obj,objname):
-      self.objects.update(obj,objname)
-
-    def rem(self,key):
-      try:
-        del self.objects[key]
-      except KeyError:
-        print('key error')
-
-    def save(self, picklez='referer.pkl'):
-        for module in self.objects.items():
-          print('in save',module)
-        return pickle.dump( self.objects, open( picklez, "wb" ) )
-
-    def load(self, picklez='referer.pkl'):
-        return pickle.load(open( picklez, "rb" ) )
-
-    def dump(self,objdict):
-      self.objects.update(objdict)
 
 class IRCBoat():
 
