@@ -160,9 +160,7 @@ class IRCBoat():
         print('msg',msg)
         if len(msg) < 2:
           return
-        text = ''
-        for i in msg[3:]:
-          text += i + ' '
+        text = ''.join(i + ' ' for i in msg[3:])
         text = text[1:].rstrip()
         dest = msg[2]
         try:
